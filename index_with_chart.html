@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linear Search Analysis</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h3 {
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.7rem;
+      margin: 0.5rem 0;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    pre {
+      background-color: #eee;
+      padding: 1rem;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Linear Search - Performance Analysis</h1>
+    <label for="size">Enter array size:</label>
+    <input type="number" id="size" placeholder="e.g., 10000" min="1" />
+    <button onclick="analyze()">Run Analysis</button>
+    <h3>Output</h3>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    function linearSearch(arr, key) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === key) return i;
+      }
+      return -1;
+    }
+
+    function analyze() {
+      const sizeInput = document.getElementById('size');
+      const output = document.getElementById('output');
+      const size = parseInt(sizeInput.value);
+
+      if (isNaN(size) || size <= 0) {
+        output.textContent = 'Please enter a valid array size.';
+        return;
+      }
+
+      const arr = Array.from({ length: size }, () => Math.floor(Math.random() * 100000));
+
+      const keyBest = arr[0];
+      const keyAvg = arr[Math.floor(size / 2)];
+      const keyWorst = -1; // ensure not found
+
+      const results = [];
+
+      const startBest = performance.now();
+      linearSearch(arr, keyBest);
+      const endBest = performance.now();
+
+      const startAvg = performance.now();
+      linearSearch(arr, keyAvg);
+      const endAvg = performance.now();
+
+      const startWorst = performance.now();
+      linearSearch(arr, keyWorst);
+      const endWorst = performance.now();
+
+      const timeBest = (endBest - startBest).toFixed(4);
+      const timeAvg = (endAvg - startAvg).toFixed(4);
+      const timeWorst = (endWorst - startWorst).toFixed(4);
+
+      output.textContent =
+        `Array size: ${size}\n\n` +
+        `Best Case: Target found at index 0. Time = ${timeBest} ms\n` +
+        `Average Case: Target found at middle index. Time = ${timeAvg} ms\n` +
+        `Worst Case: Target NOT found. Time = ${timeWorst} ms`;
+    }
+  </script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<canvas id="chart" style="max-width: 100%; margin-top: 2rem;"></canvas>
+<script>
+  function drawChart(best, avg, worst) {
+    const ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Best Case', 'Average Case', 'Worst Case'],
+        datasets: [{
+          label: 'Time (ms)',
+          data: [best, avg, worst],
+          backgroundColor: ['green', 'orange', 'red']
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Time (ms)'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Linear Search Time Comparison'
+          }
+        }
+      }
+    });
+  }
+
+  function analyze() {
+    const sizeInput = document.getElementById('size');
+    const output = document.getElementById('output');
+    const size = parseInt(sizeInput.value);
+
+    if (isNaN(size) || size <= 0) {
+      output.textContent = 'Please enter a valid array size.';
+      return;
+    }
+
+    const arr = Array.from({ length: size }, () => Math.floor(Math.random() * 100000));
+    const keyBest = arr[0];
+    const keyAvg = arr[Math.floor(size / 2)];
+    const keyWorst = -1;
+
+    const startBest = performance.now();
+    linearSearch(arr, keyBest);
+    const endBest = performance.now();
+
+    const startAvg = performance.now();
+    linearSearch(arr, keyAvg);
+    const endAvg = performance.now();
+
+    const startWorst = performance.now();
+    linearSearch(arr, keyWorst);
+    const endWorst = performance.now();
+
+    const timeBest = (endBest - startBest).toFixed(4);
+    const timeAvg = (endAvg - startAvg).toFixed(4);
+    const timeWorst = (endWorst - startWorst).toFixed(4);
+
+    output.textContent =
+      `Array size: ${size}\n\n` +
+      `Best Case: Target found at index 0. Time = ${timeBest} ms\n` +
+      `Average Case: Target found at middle index. Time = ${timeAvg} ms\n` +
+      `Worst Case: Target NOT found. Time = ${timeWorst} ms`;
+
+    drawChart(timeBest, timeAvg, timeWorst);
+  }
+</script>
+</body>
+
+</html>
