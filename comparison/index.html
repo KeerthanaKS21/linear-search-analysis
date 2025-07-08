@@ -1,1 +1,158 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linear Search Comparison Analysis</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h3 {
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.7rem;
+      margin: 0.4rem 0;
+      font-size: 1rem;
+    }
+    pre {
+      background-color: #eee;
+      padding: 1rem;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    canvas {
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Linear Search - Comparison Growth Analysis</h1>
+    <label for="sizes">Enter 5 input sizes (comma-separated):</label>
+    <input type="text" id="sizes" placeholder="e.g., 100,500,1000,5000,10000" />
+    <button onclick="analyze()">Run Analysis</button>
+    <h3>Results</h3>
+    <pre id="results"></pre>
+    <canvas id="comparisonChart"></canvas>
+  </div>
+
+  <script>
+    function analyze() {
+      const sizesText = document.getElementById('sizes').value;
+      const output = document.getElementById('results');
+      const chartCanvas = document.getElementById('comparisonChart').getContext('2d');
+      const sizes = sizesText.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x) && x > 0);
+
+      if (sizes.length !== 5) {
+        output.textContent = 'Please enter exactly 5 valid input sizes.';
+        return;
+      }
+
+      let bestCounts = [], avgCounts = [], worstCounts = [];
+      let resultText = '';
+
+      sizes.forEach(size => {
+        const arr = Array.from({ length: size }, () => Math.floor(Math.random() * 100000));
+        const keyBest = arr[0];
+        const keyAvg = arr[Math.floor(size / 2)];
+        const keyWorst = -1;
+
+        let countBest = 0, countAvg = 0, countWorst = 0;
+
+        for (let i = 0; i < arr.length; i++) {
+          countBest++;
+          if (arr[i] === keyBest) break;
+        }
+
+        for (let i = 0; i < arr.length; i++) {
+          countAvg++;
+          if (arr[i] === keyAvg) break;
+        }
+
+        for (let i = 0; i < arr.length; i++) {
+          countWorst++;
+          if (arr[i] === keyWorst) break;
+        }
+
+        bestCounts.push(countBest);
+        avgCounts.push(countAvg);
+        worstCounts.push(countWorst);
+
+        resultText += `Input Size: ${size}\n` +
+                      `  Best Case Comparisons: ${countBest}\n` +
+                      `  Average Case Comparisons: ${countAvg}\n` +
+                      `  Worst Case Comparisons: ${countWorst}\n\n`;
+      });
+
+      output.textContent = resultText;
+
+      new Chart(chartCanvas, {
+        type: 'line',
+        data: {
+          labels: sizes,
+          datasets: [
+            {
+              label: 'Best Case',
+              data: bestCounts,
+              borderColor: 'green',
+              fill: false
+            },
+            {
+              label: 'Average Case',
+              data: avgCounts,
+              borderColor: 'orange',
+              fill: false
+            },
+            {
+              label: 'Worst Case',
+              data: worstCounts,
+              borderColor: 'red',
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Input Size vs Comparisons'
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Input Size'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Number of Comparisons'
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
+
